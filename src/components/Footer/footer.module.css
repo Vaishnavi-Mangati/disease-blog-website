@@ -1,0 +1,33 @@
+.footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background-color: #f9f9f9;
+  border-top: 1px solid #e5e5e5;
+  font-size: 14px;
+  color: #555;
+  flex-wrap: wrap;
+  background-color: black;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+}
+
+.links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.link {
+  color: #777;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: #000;
+}
