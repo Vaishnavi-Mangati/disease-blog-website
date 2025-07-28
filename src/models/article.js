@@ -23,6 +23,7 @@ const ArticleSchema = new mongoose.Schema({
     author: String,
     cover_image_url: String,
     published: Boolean,
+    faq: [{ question: String, answer: String }],
     created_at: { type: Date, default: Date.now },
     content_blocks: [ContentBlockSchema],
 });

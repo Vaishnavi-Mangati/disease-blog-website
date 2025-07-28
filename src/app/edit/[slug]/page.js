@@ -1,24 +1,23 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   DndContext,
   closestCenter,
   PointerSensor,
   useSensor,
   useSensors
-} from '@dnd-kit/core';
+} from "@dnd-kit/core";
 import {
   arrayMove,
   SortableContext,
-  sortableKeyboardCoordinates,
   useSortable,
   verticalListSortingStrategy
-} from '@dnd-kit/sortable';
-import { CSS } from '@dnd-kit/utilities';
-import { nanoid } from 'nanoid';
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { nanoid } from "nanoid";
 
-const blockTypes = ['paragraph', 'heading', 'quote', 'image', 'list'];
+const blockTypes = ["paragraph", "heading", "quote", "image", "list"];
 
 function SortableItem({ id, block, updateBlock, removeBlock }) {
   const {
@@ -52,7 +51,7 @@ function SortableItem({ id, block, updateBlock, removeBlock }) {
       </div>
       <textarea
         className="w-full border p-2 rounded text-black"
-        rows={block.type === 'paragraph' ? 4 : 2}
+        rows={block.type === "paragraph" ? 4 : 2}
         value={block.content}
         onChange={(e) => updateBlock(id, e.target.value)}
         placeholder={`Enter content for ${block.type}`}
@@ -61,25 +60,70 @@ function SortableItem({ id, block, updateBlock, removeBlock }) {
   );
 }
 
-export default function PublisherPage() {
-  const [title, setTitle] = useState('');
-  const [slug, setSlug] = useState('');
-  const [author, setAuthor] = useState('');
-  const [coverImage, setCoverImage] = useState('');
-  const [tagInput, setTagInput] = useState('');
+export default function EditPage({ params }) {
+  const [loading, setLoading] = useState(true);
+  const [title, setTitle] = useState("");
+  const [slug, setSlug] = useState(params.slug || "");
+  const [author, setAuthor] = useState("");
+  const [coverImage, setCoverImage] = useState("");
+  const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState([]);
-
-  const [blockType, setBlockType] = useState('paragraph');
+  const [blockType, setBlockType] = useState("paragraph");
   const [blocks, setBlocks] = useState([]);
-
-  const [faq, setFaq] = useState([{ question: '', answer: '' }]);
+  const [faq, setFaq] = useState([{ question: "", answer: "" }]);
 
   const sensors = useSensors(useSensor(PointerSensor));
+
+  useEffect(() => {
+    async function fetchArticle() {
+      setLoading(true);
+      const res = await fetch(`/api/articles/${params.slug}`);
+      if (!res.ok) {
+        alert("Failed to fetch article");
+        setLoading(false);
+        return;
+      }
+      const article = await res.json();
+      setTitle(article.title || "");
+      setSlug(article.slug || params.slug);
+      setAuthor(article.author || "");
+      setCoverImage(article.cover_image_url || "");
+      setTags(article.tags || []);
+      setTagInput((article.tags || []).join(", "));
+      setFaq(article.faq && article.faq.length ? article.faq : [{ question: "", answer: "" }]);
+      // Convert content_blocks to blocks format
+      setBlocks(
+        (article.content_blocks || []).map((b) => {
+          if (b.type === "list") {
+            return {
+              id: nanoid(),
+              type: "list",
+              content: (b.items || []).join("\n")
+            };
+          } else if (b.type === "image") {
+            return {
+              id: nanoid(),
+              type: "image",
+              content: JSON.stringify({ url: b.url, caption: b.caption, alt: b.alt })
+            };
+          } else {
+            return {
+              id: nanoid(),
+              type: b.type,
+              content: b.text || ""
+            };
+          }
+        })
+      );
+      setLoading(false);
+    }
+    fetchArticle();
+  }, [params.slug]);
 
   const addBlock = () => {
     setBlocks((prev) => [
       ...prev,
-      { id: nanoid(), type: blockType, content: '' }
+      { id: nanoid(), type: blockType, content: "" }
     ]);
   };
 
@@ -92,10 +136,10 @@ export default function PublisherPage() {
   const deleteFaq = (index) => {
     const updatedFaq = faq.filter((_, i) => i !== index);
     setFaq(updatedFaq);
-  }
+  };
 
   const handleAddFaq = () => {
-    setFaq([...faq, { question: '', answer: '' }]);
+    setFaq([...faq, { question: "", answer: "" }]);
   };
 
   const updateBlock = (id, content) => {
@@ -117,31 +161,32 @@ export default function PublisherPage() {
     }
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     const content_blocks = blocks.map((b) => {
-      if (b.type === 'list') {
+      if (b.type === "list") {
         return {
-          type: 'list',
-          style: 'unordered',
-          items: b.content.split('\n').map((item) => item.trim()).filter(Boolean)
+          type: "list",
+          style: "unordered",
+          items: b.content.split("\n").map((item) => item.trim()).filter(Boolean)
         };
-      } else if (b.type === 'image') {
+      } else if (b.type === "image") {
         try {
           const obj = JSON.parse(b.content);
           return {
-            type: 'image',
+            type: "image",
             url: obj.url,
-            caption: obj.caption || '',
-            alt: obj.alt || ''
+            caption: obj.caption || "",
+            alt: obj.alt || ""
           };
         } catch {
-          alert('Invalid image JSON format.');
+          alert("Invalid image JSON format.");
           return null;
         }
       } else {
         return {
           type: b.type,
-          ...(b.type === 'heading' ? { level: 1 } : {}),
+          ...(b.type === "heading" ? { level: 1 } : {}),
           text: b.content
         };
       }
@@ -158,23 +203,27 @@ export default function PublisherPage() {
       faq
     };
 
-    const res = await fetch('/api/articles', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const res = await fetch(`/api/articles/${slug}/edit`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload)
     });
 
     const json = await res.json();
     if (res.ok) {
-      alert('Article created!');
+      alert("Article updated!");
     } else {
       alert(`Error: ${json.message}`);
     }
   };
 
+  if (loading) {
+    return <div className="max-w-3xl mx-auto px-4 py-6">Loading...</div>;
+  }
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold mb-4">📝 Create New Article</h1>
+      <h1 className="text-2xl font-bold mb-4">✏️ Edit Article</h1>
 
       <input
         placeholder="Title"
@@ -187,6 +236,7 @@ export default function PublisherPage() {
         value={slug}
         onChange={(e) => setSlug(e.target.value)}
         className="w-full border p-2 rounded mb-2"
+        disabled
       />
       <input
         placeholder="Author"
@@ -205,13 +255,10 @@ export default function PublisherPage() {
         value={tagInput}
         onChange={(e) => {
           setTagInput(e.target.value);
-          setTags(e.target.value.split(',').map((t) => t.trim()));
+          setTags(e.target.value.split(",").map((t) => t.trim()));
         }}
         className="w-full border p-2 rounded mb-4"
       />
-
-
-
 
       <div className="flex items-center gap-4 mb-4">
         <select
@@ -246,7 +293,7 @@ export default function PublisherPage() {
       </DndContext>
 
       <form onSubmit={handleSubmit} className="max-w-xl mx-auto space-y-4 p-6">
-        <h2 className="text-2xl font-bold mb-4">Add FAQs</h2>
+        <h2 className="text-2xl font-bold mb-4">Edit FAQs</h2>
 
         {faq.map((item, index) => (
           <div key={index} className="space-y-2 border p-4 rounded-md bg-gray-50">
@@ -255,12 +302,13 @@ export default function PublisherPage() {
                 type="text"
                 placeholder="Question"
                 value={item.question}
-                onChange={(e) => handleChange(index, 'question', e.target.value)}
+                onChange={(e) => handleChange(index, "question", e.target.value)}
                 className="w-full border p-2 rounded"
                 required
               />
               <button
                 className='ml-2'
+                type="button"
                 onClick={() => {
                   deleteFaq(index);
                 }}
@@ -272,7 +320,7 @@ export default function PublisherPage() {
             <textarea
               placeholder="Answer"
               value={item.answer}
-              onChange={(e) => handleChange(index, 'answer', e.target.value)}
+              onChange={(e) => handleChange(index, "answer", e.target.value)}
               className="w-full border p-2 rounded"
               rows={3}
               required
@@ -288,15 +336,13 @@ export default function PublisherPage() {
           Add Another FAQ
         </button>
 
-
+        <button
+          type="submit"
+          className="mt-6 bg-green-600 text-white px-6 py-2 rounded"
+        >
+          ✅ Update Article
+        </button>
       </form>
-
-      <button
-        onClick={handleSubmit}
-        className="mt-6 bg-green-600 text-white px-6 py-2 rounded"
-      >
-        ✅ Submit Article
-      </button>
     </div>
   );
 }

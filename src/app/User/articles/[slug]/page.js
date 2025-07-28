@@ -1,4 +1,5 @@
 import ContentRenderer from '@/components/ArticleBlocks/ContentRenderer';
+import FaqRenderer from '@/components/ArticleBlocks/FaqRenderer';
 
 export default async function ArticlePage({ params }) {
   const res = await fetch(`http://localhost:3000/api/articles/${params.slug}`, {
@@ -12,6 +13,7 @@ export default async function ArticlePage({ params }) {
       <h1 className="text-4xl font-bold mb-2">{article.title}</h1>
       <p className="text-sm text-gray-500 mb-6">By {article.author}</p>
       <ContentRenderer contentBlocks={article.content_blocks} />
+      <FaqRenderer faq={article.faq} />
     </div>
   );
 }

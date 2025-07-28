@@ -1,5 +1,5 @@
 import { connectToDB } from "@/lib/mongodb";
-import Article from "@/models/article";
+// import Article from "@/models/article";
 
 
 export async function POST(req) {
