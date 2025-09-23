@@ -173,8 +173,17 @@ export default function PublisherPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 py-6">
-      <h1 className="text-2xl font-bold mb-4">📝 Create New Article</h1>
+    <div className="max-w-3xl absolute inset-0 bg-gradient-to-b from-blue-600 to-blue-200">
+  <div className="relative w-screen h-64 mb-6">
+  {/* Gradient Background */}
+  <div className=""></div>
+
+  {/* Optional Heading Text */}
+  <div className="relative z-10 flex justify-center items-center h-full">
+    <h1 className="text-3xl font-bold text-white">📝 Create New Article</h1>
+  </div>
+</div>
+
 
       <input
         placeholder="Title"

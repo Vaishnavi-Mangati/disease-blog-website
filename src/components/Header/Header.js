@@ -9,7 +9,7 @@ export default function Header() {
     <div className={styles.navbar}>
       <div className={styles.logo}>
         <Link href="/">
-          <Image src="/appLogo.png" alt="Logo" width={100} height={50} />
+          <Image src="/appLogo.png" alt="Logo" width={120} height={120} />
         </Link>
       </div>
 
