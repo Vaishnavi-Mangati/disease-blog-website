@@ -173,139 +173,146 @@ export default function PublisherPage() {
   };
 
   return (
-    <div className="max-w-3xl absolute inset-0 bg-gradient-to-b from-blue-600 to-blue-200">
-  <div className="relative w-screen h-64 mb-6">
-  {/* Gradient Background */}
-  <div className=""></div>
+    <div className="absolute inset-0 bg-gradient-to-b from-[#EBCCDF] to-white w-full h-auto ">
+      <div className="relative w-screen h-[200px]  flex justify-center">
 
-  {/* Optional Heading Text */}
-  <div className="relative z-10 flex justify-center items-center h-full">
-    <h1 className="text-3xl font-bold text-white">📝 Create New Article</h1>
-  </div>
-</div>
-
-
-      <input
-        placeholder="Title"
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        className="w-full border p-2 rounded mb-2"
-      />
-      <input
-        placeholder="Slug (url-path)"
-        value={slug}
-        onChange={(e) => setSlug(e.target.value)}
-        className="w-full border p-2 rounded mb-2"
-      />
-      <input
-        placeholder="Author"
-        value={author}
-        onChange={(e) => setAuthor(e.target.value)}
-        className="w-full border p-2 rounded mb-2"
-      />
-      <input
-        placeholder="Cover Image URL"
-        value={coverImage}
-        onChange={(e) => setCoverImage(e.target.value)}
-        className="w-full border p-2 rounded mb-2"
-      />
-      <input
-        placeholder="Tags (comma-separated)"
-        value={tagInput}
-        onChange={(e) => {
-          setTagInput(e.target.value);
-          setTags(e.target.value.split(',').map((t) => t.trim()));
-        }}
-        className="w-full border p-2 rounded mb-4"
-      />
-
-
-
-
-      <div className="flex items-center gap-4 mb-4">
-        <select
-          value={blockType}
-          onChange={(e) => setBlockType(e.target.value)}
-          className="border p-2 rounded"
-        >
-          {blockTypes.map((t) => (
-            <option key={t} value={t}>{t}</option>
-          ))}
-        </select>
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-          onClick={addBlock}
-        >
-          ➕ Add Block
-        </button>
+        <div className="relative z-10 flex justify-content-start items-center h-full max-w-2xl">
+          <h1 className="text-4xl font-bold text-black ">📝 Create New Article</h1>
+        </div>
       </div>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} className="bg-black-100 tetx-black-900">
-        <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
-          {blocks.map((block) => (
-            <SortableItem
-              key={block.id}
-              id={block.id}
-              block={block}
-              updateBlock={updateBlock}
-              removeBlock={removeBlock}
+      <div className="absolute left-1/2 transform -translate-x-1/2 w-full max-w-2xl flex flex-col items-center">
+        <div className='flex justify-center gap-6'>
+          <fieldset className="min-w-[322px] border rounded mb-2 p-1">
+            <legend className="px-2 text-gray-700">Title</legend>
+            <input
+              placeholder="Eg: Health Blog"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full border-0"
             />
-          ))}
-        </SortableContext>
-      </DndContext>
+          </fieldset>
 
-      <form onSubmit={handleSubmit} className="max-w-xl mx-auto space-y-4 p-6">
-        <h2 className="text-2xl font-bold mb-4">Add FAQs</h2>
+          <fieldset className="min-w-[322px] border rounded mb-2 p-1">
+            <legend className="px-2 text-gray-700">Author</legend>
+            <input
+              placeholder="Eg: xyz"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full"
+            />
+          </fieldset>
+        </div>
+        <input
+          placeholder="Slug (url-path)"
+          value={slug}
+          onChange={(e) => setSlug(e.target.value)}
+          className="w-full border p-2 rounded mb-2"
+        />
+        <input
+          placeholder="Cover Image URL"
+          value={coverImage}
+          onChange={(e) => setCoverImage(e.target.value)}
+          className="w-full border p-2 rounded mb-2"
+        />
+        <input
+          placeholder="Tags (comma-separated)"
+          value={tagInput}
+          onChange={(e) => {
+            setTagInput(e.target.value);
+            setTags(e.target.value.split(',').map((t) => t.trim()));
+          }}
+          className="w-full border p-2 rounded mb-4"
+        />
 
-        {faq.map((item, index) => (
-          <div key={index} className="space-y-2 border p-4 rounded-md bg-gray-50">
-            <div className='flex flex-row'>
-              <input
-                type="text"
-                placeholder="Question"
-                value={item.question}
-                onChange={(e) => handleChange(index, 'question', e.target.value)}
+
+
+
+        <div className="flex items-center gap-4 mb-4">
+          <select
+            value={blockType}
+            onChange={(e) => setBlockType(e.target.value)}
+            className="border p-2 rounded "
+          >
+            {blockTypes.map((t) => (
+              <option key={t} value={t}>{t}</option>
+            ))}
+          </select>
+          <button
+            className="bg-[#d26fab] text-white px-4 py-2 rounded hover:bg-[#cc559c]"
+            onClick={addBlock}
+          >
+            ➕ Add Block
+          </button>
+        </div>
+
+        <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} className="bg-black-100 text-black-900">
+          <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
+            {blocks.map((block) => (
+              <SortableItem
+                key={block.id}
+                id={block.id}
+                block={block}
+                updateBlock={updateBlock}
+                removeBlock={removeBlock}
+              />
+            ))}
+          </SortableContext>
+        </DndContext>
+
+        <form onSubmit={handleSubmit} className="max-w-xl mx-auto space-y-4 p-6">
+          <h2 className="text-2xl font-bold mb-4">Add FAQs</h2>
+
+          {faq.map((item, index) => (
+            <div key={index} className="space-y-2 border p-4 rounded-md bg-gray-50 min-w-xl">
+              <div className='flex flex-row'>
+                <input
+                  type="text"
+                  placeholder="Question"
+                  value={item.question}
+                  onChange={(e) => handleChange(index, 'question', e.target.value)}
+                  className="w-full border p-2 rounded"
+                  required
+                />
+                <button
+                  className='ml-2'
+                  onClick={() => {
+                    deleteFaq(index);
+                  }}
+                >
+                  ❌
+                </button>
+              </div>
+
+              <textarea
+                placeholder="Answer"
+                value={item.answer}
+                onChange={(e) => handleChange(index, 'answer', e.target.value)}
                 className="w-full border p-2 rounded"
+                rows={3}
                 required
               />
-              <button
-                className='ml-2'
-                onClick={() => {
-                  deleteFaq(index);
-                }}
-              >
-                ❌
-              </button>
             </div>
+          ))}
 
-            <textarea
-              placeholder="Answer"
-              value={item.answer}
-              onChange={(e) => handleChange(index, 'answer', e.target.value)}
-              className="w-full border p-2 rounded"
-              rows={3}
-              required
-            />
-          </div>
-        ))}
+          <button
+            type="button"
+            onClick={handleAddFaq}
+            className="bg-[#d26fab] text-white px-4 py-2 rounded hover:bg-[#cc559c]"
+          >
+            Add Another FAQ
+          </button>
+
+
+        </form>
 
         <button
-          type="button"
-          onClick={handleAddFaq}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          onClick={handleSubmit}
+          className="mt-6 bg-green-600 text-white px-6 py-2 rounded"
         >
-          Add Another FAQ
+          ✅ Submit Article
         </button>
-
-
-      </form>
-
-      <button
-        onClick={handleSubmit}
-        className="mt-6 bg-green-600 text-white px-6 py-2 rounded"
-      >
-        ✅ Submit Article
-      </button>
+      </div>
     </div>
   );
 }

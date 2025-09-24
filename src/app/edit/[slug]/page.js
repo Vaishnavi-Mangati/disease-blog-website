@@ -38,9 +38,9 @@ function SortableItem({ id, block, updateBlock, removeBlock }) {
       ref={setNodeRef}
       style={style}
       {...attributes}
-      className="border rounded p-4 bg-white shadow-sm my-2"
+      className="border rounded p-4 bg-white shadow-sm my-2 w-full max-w-[500px]"
     >
-      <div className="flex justify-between mb-2 text-black">
+      <div className="flex justify-between mb-2 text-black w-[500px]">
         <strong>{block.type.toUpperCase()}</strong>
         <button
           className="text-red-500 text-sm"
@@ -229,7 +229,7 @@ export default function EditPage({ params }) {
         placeholder="Title"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        className="w-full border p-2 rounded mb-2"
+        className="w-full  p-2 rounded mb-2"
       />
       <input
         placeholder="Slug (url-path)"
@@ -264,21 +264,21 @@ export default function EditPage({ params }) {
         <select
           value={blockType}
           onChange={(e) => setBlockType(e.target.value)}
-          className="border p-2 rounded"
+          className="border p-2 rounded max-w-xl"
         >
           {blockTypes.map((t) => (
             <option key={t} value={t}>{t}</option>
           ))}
         </select>
         <button
-          className="bg-blue-600 text-white px-4 py-2 rounded"
+          className="bg-blue-600 text-white px-4 py-2 rounded "
           onClick={addBlock}
         >
           ➕ Add Block
         </button>
       </div>
 
-      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} className="bg-black-100 tetx-black-900">
+      <DndContext sensors={sensors} collisionDetection={closestCenter} onDragEnd={handleDragEnd} className="bg-black-100 text-black-900">
         <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
           {blocks.map((block) => (
             <SortableItem
